@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Propuesta Comunicación Comunidad</title>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Atkinson Hyperlegible', Arial, sans-serif;
+      background: #0a0a0a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      touch-action: pan-x;
+    }
+    .carrusel {
+      width: 100%; height: 100%;
+      max-width: 480px;
+      margin: 0 auto;
+      background: #111;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    }
+    .slides-container {
+      position: relative;
+      width: 100%;
+      height: calc(100% - 4rem);
+    }
+    .slide {
+      position: absolute;
+      top:0; left:0;
+      width:100%; height:100%;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+    .icono {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      background: rgba(255,255,255,0.05);
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+    .slide h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #ffb74d;
+    }
+    .slide p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #ddd;
+      margin-bottom: 0.8rem;
+    }
+    .slide .resaltado { color: #4fc3f7; font-weight: 700; }
+    .controles {
+      position: absolute;
+      bottom: 1.5rem;
+      left:0; width:100%;
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
+      z-index: 10;
+    }
+    .punto {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #444;
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .punto.activo { background: #ffb74d; width: 24px; border-radius: 4px; }
+    .btn-accion {
+      display: inline-block;
+      background: #ffb74d;
+      color: #000;
+      font-weight: 700;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(255,183,77,0.3);
+      transition: transform 0.2s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-accion:active { transform: scale(0.95); }
+    .btn-demo {
+      display: inline-block;
+      margin: 0.5rem 0;
+      padding: 0.7rem 1.5rem;
+      border: 2px solid #4fc3f7;
+      color: #4fc3f7;
+      font-weight: 700;
+      border-radius: 2rem;
+      text-decoration: none;
+      transition: background 0.3s, color 0.3s;
+    }
+    .btn-demo:hover {
+      background: #4fc3f7;
+      color: #000;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #1a1a1a;
+      border: 1px solid #ffb74d;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      color: #ddd;
+      text-align: center;
+    }
+    .modal h3 { color: #ffb74d; margin-bottom: 1rem; font-size: 1.4rem; }
+    .modal pre {
+      background: #000;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: left;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+      margin: 1rem 0;
+      color: #ccc;
+    }
+    .modal-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .modal button {
+      padding: 0.6rem 1.2rem;
+      border-radius: 2rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+    .btn-copiar { background: #4fc3f7; color: #000; }
+    .btn-mail { background: #ffb74d; color: #000; }
+    .btn-cerrar { background: #555; color: white; }
+
+    /* Diagrama */
+    .diagrama {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #ddd;
+    }
+    .diagrama .fila {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.05);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      width: 100%;
+      justify-content: center;
+    }
+    .diagrama .flecha {
+      font-size: 1.5rem;
+      color: #ffb74d;
+    }
+  </style>
+</head>
+<body>
+  <div class="carrusel" id="carrusel">
+    <div class="slides-container">
+      <!-- Diapositiva 0: Problema -->
+      <div class="slide active">
+        <div class="icono">📋</div>
+        <h2>Comunicación sin papeles</h2>
+        <p>Moderniza los anuncios del edificio.</p>
+        <p>Rápido, ecológico y <span class="resaltado">siempre actualizado</span>.</p>
+      </div>
+      <!-- Diapositiva 1: Solución TV -->
+      <div class="slide">
+        <div class="icono">📺</div>
+        <h2>Pantalla en la entrada</h2>
+        <p>La TV muestra anuncios, recordatorios, clima y auspiciadores <span class="resaltado">automáticamente</span>.</p>
+      </div>
+      <!-- Diapositiva 2: WhatsApp integrado -->
+      <div class="slide">
+        <div class="icono">📱</div>
+        <h2>WhatsApp integrado</h2>
+        <p>La administradora publica con un clic y copia el texto para la lista de difusión.</p>
+        <p>Los vecinos reciben la info <span class="resaltado">al instante</span>.</p>
+      </div>
+      <!-- Diapositiva 3: Requisitos técnicos -->
+      <div class="slide">
+        <div class="icono">🛠️</div>
+        <h2>¿Qué necesitan?</h2>
+        <p>La comunidad debe proveer un <span class="resaltado">TV de al menos 32"</span> y un <span class="resaltado">celular Android (v7.0 o superior)</span> que actuará como servidor.</p>
+        <p>El costo del hardware y su mantenimiento es responsabilidad de la comunidad. La instalación y configuración inicial corren por cuenta mía.</p>
+      </div>
+      <!-- Diapositiva 4: Costo cero -->
+      <div class="slide">
+        <div class="icono">💰</div>
+        <h2>Costo cero</h2>
+        <p>Instalación y mantenimiento inicial <span class="resaltado">sin costo</span> para el edificio.</p>
+        <p>Mi compensación: publicidad de maestros locales.</p>
+      </div>
+      <!-- Diapositiva 5: Seguridad -->
+      <div class="slide">
+        <div class="icono">⚖️</div>
+        <h2>Seguro para todos</h2>
+        <p>Convenio formal que protege a la comunidad y al desarrollador.</p>
+        <p>Los auspiciadores son responsables de sus servicios.</p>
+      </div>
+      <!-- Diapositiva 6: Escalable -->
+      <div class="slide">
+        <div class="icono">🧩</div>
+        <h2>Escalable a nuevas necesidades</h2>
+        <p>¿Más adelante quieren reserva de quincho, encuestas vecinales o un registro de encomiendas?</p>
+        <p>Podemos desarrollar <span class="resaltado">nuevos módulos (MVP)</span> a pedido, como proyectos independientes.</p>
+        <p style="font-size:0.9rem; color:#aaa;">Solo pagan por lo que realmente necesitan, cuando lo necesiten.</p>
+      </div>
+      <!-- Diapositiva 7: Diagrama de funcionamiento -->
+      <div class="slide">
+        <div class="icono">🔄</div>
+        <h2>Así funciona</h2>
+        <div class="diagrama">
+          <div class="fila">👩‍💼 Administradora publica en Telegram</div>
+          <div class="flecha">⬇️</div>
+          <div class="fila">📡 El servidor (celular) recibe el mensaje</div>
+          <div class="flecha">⬇️</div>
+          <div class="fila">📺 La TV se actualiza automáticamente</div>
+          <div class="flecha">⬇️</div>
+          <div class="fila">📱 Se genera texto listo para WhatsApp</div>
+          <div class="flecha">⬇️</div>
+          <div class="fila">👥 Los vecinos reciben la información al instante</div>
+        </div>
+      </div>
+      <!-- Diapositiva 8: Cierre -->
+      <div class="slide">
+        <div class="icono">✅</div>
+        <h2>¿Listos para innovar?</h2>
+        <p>Solo necesito la aprobación del comité.</p>
+        <p>Les dejo todo funcionando y capacitamos a la administradora.</p>
+        <a href="./index.html" target="_blank" class="btn-demo">📺 Ver demostración en vivo</a>
+        <button onclick="mostrarModal()" class="btn-accion">📧 Responder el correo solicitando la implementación</button>
+      </div>
+    </div>
+    <div class="controles" id="contenedor-puntos"></div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h3>✉️ Solicitud de implementación</h3>
+      <p>Copiá el siguiente texto y envíalo a <strong>[TU_CORREO]</strong>:</p>
+      <pre id="textoCorreo">Hola [Tu nombre],
+Nos interesa implementar el sistema de comunicación comunitaria en nuestro edificio.
+Por favor enviarnos el convenio para revisión y coordinar la instalación.
+
+Saludos,
+[Nombre del representante]
+[Contacto]</pre>
+      <div class="modal-buttons">
+        <button class="btn-copiar" onclick="copiarCorreo()">📋 Copiar texto</button>
+        <button class="btn-mail" onclick="abrirCorreo()">📬 Abrir correo</button>
+        <button class="btn-cerrar" onclick="cerrarModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Carrusel
+    document.addEventListener('DOMContentLoaded', function() {
+      const slides = document.querySelectorAll('.slide');
+      const contenedorPuntos = document.getElementById('contenedor-puntos');
+      let actual = 0;
+      let startX = 0;
+
+      slides.forEach((_, i) => {
+        const punto = document.createElement('span');
+        punto.className = 'punto' + (i === 0 ? ' activo' : '');
+        punto.addEventListener('click', () => irA(i));
+        contenedorPuntos.appendChild(punto);
+      });
+      const puntos = document.querySelectorAll('.punto');
+
+      function irA(index) {
+        if (index === actual) return;
+        slides[actual].classList.remove('active');
+        puntos[actual].classList.remove('activo');
+        actual = index;
+        slides[actual].classList.add('active');
+        puntos[actual].classList.add('activo');
+      }
+
+      const carrusel = document.getElementById('carrusel');
+      carrusel.addEventListener('touchstart', e => startX = e.touches[0].clientX);
+      carrusel.addEventListener('touchend', e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0 && actual < slides.length - 1) irA(actual + 1);
+          else if (diff < 0 && actual > 0) irA(actual - 1);
+        }
+      });
+    });
+
+    // Modal
+    function mostrarModal() {
+      document.getElementById('modalOverlay').classList.add('active');
+    }
+    function cerrarModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
+    }
+    function copiarCorreo() {
+      const texto = document.getElementById('textoCorreo').innerText;
+      navigator.clipboard.writeText(texto).then(() => alert('Texto copiado al portapapeles.'));
+    }
+    function abrirCorreo() {
+      const asunto = encodeURIComponent('Implementación sistema de comunicación');
+      const cuerpo = encodeURIComponent(document.getElementById('textoCorreo').innerText);
+      window.location.href = `mailto:[TU_CORREO]?subject=${asunto}&body=${cuerpo}`;
+    }
+
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+      if (e.target === this) cerrarModal();
+    });
+  </script>
+</body>
+</html>

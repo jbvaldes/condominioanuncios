@@ -1,0 +1,59 @@
+/* Estilos esenciales para el kiosko */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Atkinson Hyperlegible', Arial, sans-serif;
+  background: #111 !important;
+  overflow: hidden; /* Evita scroll innecesario */
+}
+
+#pantalla {
+  max-width: 1000px;
+  margin: 0 auto;
+  aspect-ratio: 16 / 9;
+  background: black;
+  border: 2px solid #333;
+  border-radius: 4px;
+}
+
+/* Slides */
+.slide {
+  opacity: 0;
+  transition: opacity 0.5s eases ease-in-out;
+ -in-out;
+  pointer-events: none;
+ pointer-events: none;
+}
+
+.slide.active {
+ }
+
+.slide.active {
+  opacity: 1;
+  opacity: 1;
+  pointer-events: auto;
+ pointer-events: auto;
+}
+
+/* Disclaimer de}
+
+/* Disclaimer de publicidad */
+.disclaimer {
+ publicidad */
+.disclaimer {
+  background: rgba  background(255, 0, 0, 0.85): rgba(255, 0, 0, 0.85) !important;
+  position: absolute;
+ !important;
+  position: absolute;
+  bottom: 10px;
+   bottom:  left: 10px;
+  right10px;
+  left: 10px;
+  right: 10px;
+}
+: 10px;
+}
